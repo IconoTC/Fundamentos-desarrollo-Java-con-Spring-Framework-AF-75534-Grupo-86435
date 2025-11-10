@@ -45,11 +45,11 @@
 
 #### MongoDB
 
-    docker run -d --name mongodb -p 27017:27017 -v .:/externo jamarton/mongodb-contactos
+    docker run -d --name mongodb -p 27017:27017 jamarton/mongodb-contactos
 
 #### Redis
 
-    docker run -d --name redis -p 6379:6379 -p 6380:8001 -v .:/data redis/redis-stack:latest
+    docker run -d --name redis -p 6379:6379 -p 6380:8001 redis/redis-stack:latest
 
 ## Documentación
 

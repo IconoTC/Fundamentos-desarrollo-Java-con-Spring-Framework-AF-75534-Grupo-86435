@@ -12,7 +12,7 @@ public class ConfiguracionImpl implements Configuracion {
 	private final NotificationService notify;
 	private int contador = 0;
 	
-	public ConfiguracionImpl(NotificationService notify, String autor) {
+	public ConfiguracionImpl(NotificationService notify) {
 		this.notify = notify;
 		notify.add(getClass().getSimpleName() + " Constructor");
 	}

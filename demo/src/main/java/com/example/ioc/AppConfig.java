@@ -26,6 +26,7 @@ public class AppConfig {
 	}
 	
 	@Bean
+	@Qualifier("remoto")
 	Sender correo(EMailSender item) {
 		return item;
 	}
@@ -37,19 +38,18 @@ public class AppConfig {
 	}
 	
 	@Bean
-	@Qualifier("remoto")
 	Sender twittea(TwitterSender item) {
 		return item;
 	}
 	
 	@Bean
-	@Primary
-	Sender sender(EMailSender correo) {
+//	@Primary
+	Sender primario(EMailSender correo) {
 		return correo;
 	}
 	
 	@Bean int version() { 
-		return 22; 
+		return 21; 
 	}
 	@Bean() String autor() { 
 		return "Yo mismo"; 

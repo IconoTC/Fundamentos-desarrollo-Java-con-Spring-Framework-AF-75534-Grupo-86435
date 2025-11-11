@@ -7,6 +7,9 @@
   - Help > Eclipse Marketplace ... > [Spring Tools 4 (aka Spring Tool Suite 4)](https://marketplace.eclipse.org/content/spring-tools-4-aka-spring-tool-suite-4)
   - [Project Lombok](https://projectlombok.org/downloads/lombok.jar)
     - **Instalación:** javaw -jar lombok.jar
+- Entorno (opcionales)
+  - [Git](https://git-scm.com/)
+  - [Maven](https://maven.apache.org/download.cgi)
 - Clientes de bases de datos (opcionales)
   - [HeidiSQL](https://www.heidisql.com/download.php)
   - [MongoDB Compass](https://www.mongodb.com/try/download/compass)

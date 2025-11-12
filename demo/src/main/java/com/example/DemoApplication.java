@@ -2,6 +2,7 @@ package com.example;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -11,9 +12,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import com.example.ioc.ClaseNoComponente;
 import com.example.ioc.ConstructorConValores;
+import com.example.ioc.Dummy;
 import com.example.ioc.NotificationService;
 import com.example.ioc.Rango;
 import com.example.ioc.anotaciones.Remoto;
@@ -21,6 +26,8 @@ import com.example.ioc.contratos.Servicio;
 import com.example.ioc.contratos.ServicioCadenas;
 import com.example.ioc.notificaciones.Sender;
 
+@EnableAsync
+@EnableScheduling
 @SpringBootApplication
 public class DemoApplication implements CommandLineRunner {
 
@@ -60,9 +67,10 @@ public class DemoApplication implements CommandLineRunner {
 			srv.get().forEach(notify::add);
 			srv.add("Añado");
 			srv.modify("Modifico");
-			IO.println("ejemplosIoC --------------------------->");
-			notify.getListado().forEach(IO::println);
-			IO.println("< ---------------------------");
+//			IO.println("ejemplosIoC --------------------------->");
+//			notify.getListado().forEach(IO::println);
+//			notify.clear();
+//			IO.println("< ---------------------------");
 		};
 	}
 	
@@ -106,7 +114,7 @@ public class DemoApplication implements CommandLineRunner {
 		};
 	}
 
-	@Bean
+//	@Bean
 	CommandLineRunner xml() {
 		return arg -> {
 //			IO.println(System.getProperty("java.class.path"));
@@ -130,4 +138,39 @@ public class DemoApplication implements CommandLineRunner {
 		};
 	}
 
+//	@EventListener
+//	void eventHandler(GenericoEvent ev) {
+//		System.err.println("Evento %s -> %s".formatted(ev.origen(), ev.carga()));
+//	}
+//
+//	@EventListener
+//	void repositoryEvent(String ev) {
+//		System.err.println("Repositorio: %s".formatted(ev));
+//	}
+	
+	@Scheduled(timeUnit = TimeUnit.SECONDS, fixedDelay = 5, initialDelay = 5)
+	void muetraLasNorificacionesPendientes() {
+//		IO.println("Han pasado 5 segundos");
+		if(notify.hasMessages()) {
+			IO.println("Scheduled --------------------------->");
+			notify.getListado().forEach(IO::println);
+			notify.clear();
+			IO.println("< ---------------------------");
+		}
+	}
+	
+	@Bean
+	CommandLineRunner asincrono(Dummy dummy) {
+		return arg -> {
+			var obj = dummy; // new Dummy();//
+			notify.add("Empiezo asincrono");
+			System.err.println(obj.getClass().getCanonicalName());
+			obj.ejecutarTareaSimpleAsync(1);
+			obj.ejecutarTareaSimpleAsync(2);
+			obj.calcularResultadoAsync(10, 20, 30, 40, 50).thenAccept(result -> notify.add(result));
+			obj.calcularResultadoAsync(1, 2, 3).thenAccept(result -> notify.add(result));
+			obj.calcularResultadoAsync().thenAccept(result -> notify.add(result));
+			notify.add("Termino asincrono");
+		};
+	}
 }

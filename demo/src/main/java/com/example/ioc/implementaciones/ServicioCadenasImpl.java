@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import com.example.aop.anotations.Logged;
 import com.example.ioc.NotificationService;
 import com.example.ioc.contratos.RepositorioCadenas;
 import com.example.ioc.contratos.ServicioCadenas;
@@ -40,7 +41,7 @@ public class ServicioCadenasImpl implements ServicioCadenas {
 	}
 
 	@Override
-//	@Logged
+	@Logged
 	public void modify(String item) {
 		if (item == null || item.trim() == "")
 			throw new IllegalArgumentException("Datos invalidos.");

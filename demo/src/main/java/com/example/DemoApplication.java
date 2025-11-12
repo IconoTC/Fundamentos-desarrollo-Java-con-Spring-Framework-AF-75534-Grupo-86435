@@ -11,23 +11,28 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import com.example.aop.AuthenticationService;
+import com.example.aop.introductions.Visible;
 import com.example.ioc.ClaseNoComponente;
 import com.example.ioc.ConstructorConValores;
 import com.example.ioc.Dummy;
 import com.example.ioc.NotificationService;
 import com.example.ioc.Rango;
 import com.example.ioc.anotaciones.Remoto;
+import com.example.ioc.contratos.Configuracion;
 import com.example.ioc.contratos.Servicio;
 import com.example.ioc.contratos.ServicioCadenas;
 import com.example.ioc.notificaciones.Sender;
 
 @EnableAsync
 @EnableScheduling
+@EnableAspectJAutoProxy
 @SpringBootApplication
 public class DemoApplication implements CommandLineRunner {
 
@@ -159,7 +164,7 @@ public class DemoApplication implements CommandLineRunner {
 		}
 	}
 	
-	@Bean
+//	@Bean
 	CommandLineRunner asincrono(Dummy dummy) {
 		return arg -> {
 			var obj = dummy; // new Dummy();//
@@ -171,6 +176,42 @@ public class DemoApplication implements CommandLineRunner {
 			obj.calcularResultadoAsync(1, 2, 3).thenAccept(result -> notify.add(result));
 			obj.calcularResultadoAsync().thenAccept(result -> notify.add(result));
 			notify.add("Termino asincrono");
+		};
+	}
+	
+	@Bean
+	CommandLineRunner demosAOP(Dummy dummy, Configuracion config, ServicioCadenas srv, AuthenticationService auth) {
+		return arg -> {
+			try {
+//				dummy.setControlado(null);
+				auth.login();
+////				System.out.println(dummy.getClass().getSimpleName());
+////				System.out.println(dummy instanceof Dummy);
+////				System.out.println(config.getNext());
+////				dummy.setControlado(null);
+//				srv.get().forEach(notify::add);
+//				System.out.println("------------------------------>");
+//				notify.getListado().forEach(System.out::println);
+//				notify.clear();
+//				System.out.println("<------------------------------");
+				srv.get().forEach(notify::add);
+				srv.add("añado");
+//				auth.logout();
+				srv.modify("Modificado");
+//				System.out.println("------------------------------>");
+//				notify.getListado().forEach(System.out::println);
+//				System.out.println("<------------------------------");
+				if(srv instanceof Visible v) {
+					System.err.println(v.isVisible() ? "Es visible" : "No es visible");
+					v.mostrar();
+					System.err.println(v.isVisible() ? "Es visible" : "No es visible");
+					v.ocultar();
+					System.err.println(v.isVisible() ? "Es visible" : "No es visible");
+				} else 
+					System.err.println("No implementa Visible");
+			} catch (Exception e) {
+				System.err.println("No se habia tratado en el aspecto: %s->%s".formatted(e.getClass().getSimpleName(), e.getMessage()));
+			}
 		};
 	}
 }

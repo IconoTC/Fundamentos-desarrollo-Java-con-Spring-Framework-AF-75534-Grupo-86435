@@ -245,7 +245,6 @@ El resultado al ejecutar es:
     3) Inyección por campo (FieldInjectionService):
     FieldInjectionService - saludo: Hola desde Spring IoC con Spring Boot!
 
-
 ## Paso 6: Configuración Java con @Configuration y @Bean
 
 `model/Saludo.java`
@@ -383,9 +382,10 @@ El resultado al ejecutar es:
 
 ### Sin estado
 
-Por defecto, los beans son *singleton*.
+Por defecto, los beans son *singleton*. Si añadimos el ámbito prototype y modificamos el constructor:
 
 `model/Saludo.java`
+
 ```java
 import org.springframework.context.annotation.Scope;
 
@@ -410,13 +410,14 @@ El resultado al ejecutar es:
     Inicializando Saludo com.example.model.Saludo@5ad91fce...
     :
 
-El valor que muestra después de la @ representa a la referencia, su valor concreto no es lo importante (lo puede cambiar el Garbage Collector), que coincidan o no si es relevante, dado que valores distintos representan instancias distintas. Cada vez que lo inyectes, Spring creará una nueva instancia.
+El valor que muestra después de la @ representa a la referencia (hashcode), su valor concreto no es lo importante (lo puede cambiar el Garbage Collector), que coincidan o no si es relevante, dado que valores distintos representan instancias distintas. Cada vez que lo inyectes, Spring creará una nueva instancia.
 
 ### Con estado
 
 Los beans *singleton* comparten su estado mientras que los *prototype* no.
 
 `model/ContadorBean.java`
+
 ```java
 package com.example.model;
 
@@ -531,6 +532,7 @@ El resultado al ejecutar es:
 Y si comentamos el scope (por defecto es *singleton*):
 
 `model/ContadorBean.java`
+
 ```java
 @Component
 //@Scope("prototype")
@@ -553,6 +555,7 @@ El resultado al ejecutar es:
 Con @Lazy, el bean *singleton* se crea solo cuando se inyecta la primera vez:
 
 `model/SaludoLento.java`
+
 ```java
 package com.example.model;
 
@@ -619,6 +622,7 @@ El resultado al ejecutar es:
 Varias implementaciones del mismo tipo:
 
 `model/Saludar.java`
+
 ```java
 package com.example.model;
 
@@ -628,6 +632,7 @@ public interface Saludar {
 ```
 
 `model/SaludoFormal.java`
+
 ```java
 package com.example.model;
 
@@ -641,7 +646,8 @@ class SaludoFormal implements Saludar {
 }
 ```
 
-`model/SaludoFormal.java`
+`model/SaludoInformal.java`
+
 ```java
 package com.example.model;
 
@@ -706,13 +712,15 @@ El resultado al ejecutar es:
 Si cambiamos el primario:
 
 `model/SaludoFormal.java`
+
 ```java
 //@Primary
 @Component("formalSaludo")
 class SaludoFormal implements Saludar {
 ```
 
-`model/SaludoFormal.java`
+`model/SaludoInformal.java`
+
 ```java
 @Primary
 @Component("informalSaludo")
@@ -841,6 +849,7 @@ public class SaludoDev implements Saludar {
     public String obtenerMensaje() { return "Hola desarrollador!"; }
 }
 ```
+
 `model/SaludoProd.java`
 
 ```java
@@ -881,6 +890,16 @@ En la clase principal:
         System.out.println(bean.obtenerMensaje());
    }
 ```
+
+El resultado al ejecutar es:
+
+    :
+    7) Beans por perfil activo (consulta):
+    Active profiles: []
+    Bean 'profileSaludo' no definido para el perfil activo.
+    Bean 'profileSaludo' cargado: SaludoProd
+    Bienvenido al sistema (perfil prod)
+    :
 
 Activar perfil `dev` en application.yml
 

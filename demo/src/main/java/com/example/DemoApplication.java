@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +19,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import com.example.aop.AuthenticationService;
+import com.example.aop.StrictNullChecksAspect;
 import com.example.aop.introductions.Visible;
 import com.example.ioc.ClaseNoComponente;
 import com.example.ioc.ConstructorConValores;
@@ -164,14 +166,16 @@ public class DemoApplication implements CommandLineRunner {
 		}
 	}
 	
-//	@Bean
+	@Bean
 	CommandLineRunner asincrono(Dummy dummy) {
 		return arg -> {
 			var obj = dummy; // new Dummy();//
 			notify.add("Empiezo asincrono");
 			System.err.println(obj.getClass().getCanonicalName());
-			obj.ejecutarTareaSimpleAsync(1);
-			obj.ejecutarTareaSimpleAsync(2);
+//			obj.ejecutarTareaSimpleAsync(1);
+//			obj.ejecutarTareaSimpleAsync(2);
+			obj.ejecutarAutoInvocadoAsync(1);
+			obj.ejecutarAutoInvocadoAsync(2);
 			obj.calcularResultadoAsync(10, 20, 30, 40, 50).thenAccept(result -> notify.add(result));
 			obj.calcularResultadoAsync(1, 2, 3).thenAccept(result -> notify.add(result));
 			obj.calcularResultadoAsync().thenAccept(result -> notify.add(result));
@@ -179,11 +183,12 @@ public class DemoApplication implements CommandLineRunner {
 		};
 	}
 	
-	@Bean
+//	@Bean
 	CommandLineRunner demosAOP(Dummy dummy, Configuracion config, ServicioCadenas srv, AuthenticationService auth) {
 		return arg -> {
 			try {
 //				dummy.setControlado(null);
+//				dummy.setDescontrolado(null);
 				auth.login();
 ////				System.out.println(dummy.getClass().getSimpleName());
 ////				System.out.println(dummy instanceof Dummy);
@@ -212,6 +217,64 @@ public class DemoApplication implements CommandLineRunner {
 			} catch (Exception e) {
 				System.err.println("No se habia tratado en el aspecto: %s->%s".formatted(e.getClass().getSimpleName(), e.getMessage()));
 			}
+		};
+	}
+	
+//	@Bean
+	CommandLineRunner strictNullChecks(Dummy dummy) {
+		return _ -> {
+			System.out.println("---------------> dummy inyectado");
+			System.out.println("Con proxy: " + dummy.getClass().getSimpleName());
+			try {
+				dummy.setDescontrolado(null);
+			} catch (Exception e) {
+				System.err.println(">>>> %s -> %s".formatted(e.getClass().getSimpleName(), e.getMessage()));
+			}
+			try {
+				System.out.println(dummy.getDescontrolado());
+			} catch (Exception e) {
+				System.err.println(">>>> %s -> %s".formatted(e.getClass().getSimpleName(), e.getMessage()));
+			}
+			try {
+				dummy.setDescontrolado("Con un valor");
+				System.out.println(dummy.getDescontrolado());
+			} catch (Exception e) {
+				System.err.println(">>>> %s -> %s".formatted(e.getClass().getSimpleName(), e.getMessage()));
+			}
+			try {
+				dummy.setControlado(null);
+			} catch (Exception e) {
+				System.err.println(">>>> %s -> %s".formatted(e.getClass().getSimpleName(), e.getMessage()));
+			}
+			System.out.println("---------------> dummy instanciado");
+			var d = new Dummy();
+			System.out.println("Sin proxy: " + d.getClass().getSimpleName());
+			try {
+				d.setDescontrolado("Pongo un valor");
+				System.out.println(d.getDescontrolado());
+				d.setDescontrolado(null);
+				System.out.println(d.getDescontrolado());
+				d.setControlado(null);
+			} catch (Exception e) {
+				System.err.println(">>>> %s -> %s".formatted(e.getClass().getSimpleName(), e.getMessage()));
+			}
+
+			System.out.println("---------------> dummy envuelto");
+			var factory = new AspectJProxyFactory(d);
+			factory.addAspect(StrictNullChecksAspect.class);
+			var proxy = (Dummy)factory.getProxy();
+			System.out.println("Sin proxy: " + d.getClass().getSimpleName());
+			System.out.println("Con proxy: " + proxy.getClass().getSimpleName());
+			try {
+				proxy.setDescontrolado("Pongo un valor en el proxy");
+				System.out.println(proxy.getDescontrolado());
+				proxy.setDescontrolado(null);
+				System.out.println(proxy.getDescontrolado());
+				proxy.setControlado(null);
+			} catch (Exception e) {
+				System.err.println(">>>> %s -> %s".formatted(e.getClass().getSimpleName(), e.getMessage()));
+			}
+
 		};
 	}
 }

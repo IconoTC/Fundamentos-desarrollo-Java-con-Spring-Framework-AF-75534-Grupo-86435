@@ -4,16 +4,19 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
+import org.springframework.lang.NonNull;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
-
-import lombok.NonNull;
 
 @Component
 @Scope("prototype")
 public class Dummy {
 	private String valor;
+    @Lazy @Autowired 
+    Dummy self;
 
 	@NonNull 
 	public String getDescontrolado() {
@@ -46,6 +49,10 @@ public class Dummy {
 		valor = null;
 	}
 
+	public void ejecutarAutoInvocadoAsync(int i) {
+		self.ejecutarTareaSimpleAsync(i);
+	}
+	
 	@Async
 	public void ejecutarTareaSimpleAsync(int i) {
 		ejecutarTareaSimple(i);

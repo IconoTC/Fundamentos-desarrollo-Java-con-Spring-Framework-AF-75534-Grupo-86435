@@ -28,6 +28,15 @@ public class DemoDataApplication implements CommandLineRunner {
 		return arg -> {
 //			demos.run();
 //			demos.actores();
+//			demos.consultas();
+//			demos.navegacion();
+//			demos.peliculas();
+			try {
+				demos.run();
+//				demos.transaccion();
+			} catch (Exception e) {
+				System.err.println(e.getMessage());
+			}
 		};
 	}
 	

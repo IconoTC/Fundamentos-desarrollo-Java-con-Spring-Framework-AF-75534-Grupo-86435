@@ -34,7 +34,8 @@ public class DemoDataApplication implements CommandLineRunner {
 			try {
 //				demos.run();
 //				demos.transaccion();
-				demos.validaciones();
+//				demos.validaciones();
+				demos.proyecciones();
 			} catch (Exception e) {
 				System.err.println(e.getMessage());
 			}

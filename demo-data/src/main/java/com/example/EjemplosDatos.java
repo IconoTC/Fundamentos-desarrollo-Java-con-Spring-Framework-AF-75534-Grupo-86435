@@ -1,7 +1,10 @@
 package com.example;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +14,8 @@ import com.example.contracts.domain.repositories.CategoriesRepository;
 import com.example.contracts.domain.repositories.FilmsRepository;
 import com.example.domain.entities.Actor;
 import com.example.domain.entities.Category;
+import com.example.domain.entities.models.ActorDto;
+import com.example.domain.entities.models.ActorShort;
 
 @Component
 public class EjemplosDatos {
@@ -90,6 +95,17 @@ public class EjemplosDatos {
 		} else {
 			daoActors.save(a);
 		}
+	}
+
+	record Pelis(int id, String title) {}
+	
+	public void proyecciones() {
+//		daoActors.findByIdGreaterThanEqual(200).forEach(item -> IO.println(ActorDto.from(item)));
+//		daoActors.queryByIdGreaterThanEqual(200).forEach(IO::println);
+//		daoActors.getByIdGreaterThanEqual(200).forEach(item -> IO.println(item.getId() + " " + item.getNombre()));
+//		daoActors.searchByIdGreaterThanEqual(200, ActorDto.class).forEach(IO::println);
+		daoActors.searchByIdGreaterThanEqual(200, ActorShort.class).forEach(item -> IO.println(item.getId() + " " + item.getNombre()));
+//		daoPelis.findAllBy(PageRequest.of(0, 10), Pelis.class).getContent().forEach(IO::println);
 	}
 
 }

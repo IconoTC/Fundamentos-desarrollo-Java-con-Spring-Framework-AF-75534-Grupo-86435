@@ -27,7 +27,7 @@ public class DemoDataApplication implements CommandLineRunner {
 	CommandLineRunner ejemplos(EjemplosDatos demos) {
 		return arg -> {
 //			demos.run();
-			demos.actores();
+//			demos.actores();
 		};
 	}
 	

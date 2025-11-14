@@ -1,6 +1,7 @@
 package com.example;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,9 +14,11 @@ import com.example.domain.entities.Category;
 
 @Component
 public class EjemplosDatos {
+	@Lazy @Autowired EjemplosDatos self;
+	
 	public void run() {
 		System.out.println("Elemplos");
-		transaccion();
+		self.transaccion();
 	}
 
 	@Autowired
@@ -79,6 +82,14 @@ public class EjemplosDatos {
 		daoActors.deleteById(1);
 		daoCategories.findByIdGreaterThanEqual(1);
 		daoCategories.save(new Category(1, "Serie B"));
+	}
+	public void validaciones() {
+		var a = new Actor(null, "Ñ A");
+		if(a.isInvalid()) {
+			System.err.println(a.getErrorsMessage());
+		} else {
+			daoActors.save(a);
+		}
 	}
 
 }

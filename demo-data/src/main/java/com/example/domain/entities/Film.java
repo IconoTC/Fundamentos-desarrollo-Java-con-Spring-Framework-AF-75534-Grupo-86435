@@ -2,6 +2,10 @@ package com.example.domain.entities;
 
 import java.io.Serializable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,12 +32,14 @@ public class Film implements Serializable {
 	@Column(name="last_update", insertable=false, updatable=false, nullable=false)
 	private LocalDateTime lastUpdate;
 
+	@Positive
 	private Integer length;
 
 	@Column(length=1)
 	private String rating;
 
 	@Column(name="release_year")
+	@Min(1901) @Max(2155)
 	private Short releaseYear;
 
 	@Column(name="rental_duration", nullable=false)

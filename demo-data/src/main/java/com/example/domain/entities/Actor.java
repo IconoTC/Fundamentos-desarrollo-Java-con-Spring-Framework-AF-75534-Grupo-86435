@@ -2,10 +2,19 @@ package com.example.domain.entities;
 
 import java.io.Serializable;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import com.example.core.domain.entities.AbstractEntity;
+import com.example.core.domain.validation.Uppercase;
 
 /**
  * The persistent class for the actor database table.
@@ -14,7 +23,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "actor")
 @NamedQuery(name = "Actor.findAll", query = "SELECT a FROM Actor a")
-public class Actor implements Serializable {
+public class Actor extends AbstractEntity<Actor> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -23,17 +32,24 @@ public class Actor implements Serializable {
 	private int id;
 
 	@Column(name = "first_name", nullable = false, length = 45)
+	@NotBlank
+	@Size(max = 45, min = 2)
+	@Pattern(regexp = "^[A-Z]+$", message = "tiene que estar en mayusculas")
 	private String firstName;
 
 	@Column(name = "last_name", nullable = false, length = 45)
+	@NotBlank
+	@Size(max = 45, min = 2)
+	@Uppercase
 	private String lastName;
 
 	@Column(name = "last_update", insertable = false, updatable = false, nullable = false)
+	@Past
 	private LocalDateTime lastUpdate;
 
 	// bi-directional many-to-one association to FilmActor
 	@OneToMany(mappedBy = "actor", fetch = FetchType.LAZY)
-	private List<FilmActor> filmActors;
+	private List<@Valid FilmActor> filmActors;
 
 	public Actor() {
 		filmActors = new ArrayList<FilmActor>();

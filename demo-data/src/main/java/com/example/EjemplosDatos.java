@@ -16,6 +16,10 @@ import com.example.domain.entities.Actor;
 import com.example.domain.entities.Category;
 import com.example.domain.entities.models.ActorDto;
 import com.example.domain.entities.models.ActorShort;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 @Component
 public class EjemplosDatos {
@@ -97,7 +101,7 @@ public class EjemplosDatos {
 		}
 	}
 
-	record Pelis(int id, String title) {}
+	record Pelis(int id, @JsonProperty("titulo") String title) {}
 	
 	public void proyecciones() {
 //		daoActors.findByIdGreaterThanEqual(200).forEach(item -> IO.println(ActorDto.from(item)));
@@ -106,6 +110,21 @@ public class EjemplosDatos {
 //		daoActors.searchByIdGreaterThanEqual(200, ActorDto.class).forEach(IO::println);
 		daoActors.searchByIdGreaterThanEqual(200, ActorShort.class).forEach(item -> IO.println(item.getId() + " " + item.getNombre()));
 //		daoPelis.findAllBy(PageRequest.of(0, 10), Pelis.class).getContent().forEach(IO::println);
+	}
+
+	@Autowired 
+	ObjectMapper jsonMapper;
+	
+	public void serializacion() {
+		XmlMapper xmlMapper = new XmlMapper();
+		try {
+			var c = daoCategories.findById(1).get();
+			IO.println(jsonMapper.writeValueAsString(c));
+			IO.println(xmlMapper.writeValueAsString(c));
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
